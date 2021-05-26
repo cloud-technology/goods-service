@@ -1,0 +1,131 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.0'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'org.openapi.generator' version '5.1.1'
+}
+
+group = 'com.example'
+version = '0.0.1'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('testcontainersVersion', "1.15.3")
+		// OpenAPI input file
+	set('openapiInputSpec', "${rootDir}/specs/openapi.yaml")
+	// Output dir
+	set('openapiOutputDir', "${rootDir}/generated/springboot")
+	// If customization need add template dir
+	set('openapiTemplateDir', "${rootDir}/template")
+	// root package (have OpenAPI2SpringBoot.java & RFC3339DateFormat.java) 
+	set('openapiInvokerPackage', "${group}")
+	// Controller
+	set('openapiApiPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest")
+	// Models
+	set('openapiModelPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest.dto")
+    // JavaConfig
+	set('openapiConfigPackage', "${openapiInvokerPackage}.configuration")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:mysql'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+openApiValidate {
+	inputSpec = "${openapiInputSpec}"
+}
+
+openApiGenerate {
+    generatorName = "spring"
+	library = "spring-boot"
+	inputSpec = "${openapiInputSpec}"
+    outputDir = "${openapiOutputDir}"
+	templateDir = "${openapiTemplateDir}"
+	invokerPackage = "${openapiInvokerPackage}"
+	apiPackage = "${openapiApiPackage}"
+    modelPackage = "${openapiModelPackage}"
+    configOptions = [
+		configPackage: "${openapiConfigPackage}",
+        dateLibrary: "java8",
+		openApiNullable: "false",
+		disallowAdditionalPropertiesIfNotPresent: "false",
+		groupId: "${group}",
+        hateoas: "false",
+        interfaceOnly: "true",
+		licenseName: "Unlicense",
+		singleContentTypes: "true", // Whether to select only one produces/consumes content-type by operation.
+		title: "${rootProject.name}",
+		unhandledException: "true", // Declare operation methods to throw a generic exception and allow unhandled exceptions
+		useTags: "true", // use tags for creating interface and controller classnames
+		useOptional: "true"
+    ]
+}
+
+task buildFeignSDK(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+	generatorName = "spring"
+	library= "spring-cloud"
+	inputSpec = "${openapiInputSpec}"
+	outputDir = "${rootDir}/generated/client/feign".toString()
+	templateDir = "${openapiTemplateDir}"
+	invokerPackage = "${openapiInvokerPackage}"
+	apiPackage = "${openapiInvokerPackage}.${rootProject.name}.application.internal.outboundservices.acl"
+	modelPackage = "${openapiInvokerPackage}.shareddomain.${rootProject.name}.interfaces.rest.dto"
+	configOptions = [
+		configPackage: "${openapiConfigPackage}",
+		dateLibrary: "java8",
+		openApiNullable: "false",
+		disallowAdditionalPropertiesIfNotPresent: "false",
+		groupId: "${group}",
+		hateoas: "false",
+		interfaceOnly: "false",
+		licenseName: "Unlicense",
+		singleContentTypes: "true",
+		title: "${rootProject.name}",
+		unhandledException: "true",
+		useTags: "true",
+		useOptional: "true"
+	]
+}
+
+task buildGoSdk(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+	generatorName = "go"
+	inputSpec = "${openapiInputSpec}"
+	outputDir = "${rootDir}/generated/client/go".toString()
+}
+
+task buildAngularSdk(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+	generatorName = "typescript-angular"
+	inputSpec = "${openapiInputSpec}"
+	outputDir = "${rootDir}/generated/client/angular".toString()
+}
