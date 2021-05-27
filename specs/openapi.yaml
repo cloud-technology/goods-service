@@ -23,13 +23,13 @@ servers:
         default: '8080'
         description: 開發環境
 paths:
-  '/goodss/{goodsId}':
+  '/goods/{goodsId}':
     parameters:
       - $ref: '#/components/parameters/goodsId'
     get:
       summary: get goods by ID
       tags:
-        - Goodss
+        - Goods
       responses:
         '200':
           description: OK
@@ -39,14 +39,14 @@ paths:
                 $ref: '#/components/schemas/GoodsViewDto'
         '404':
           $ref: '#/components/responses/ErrorResponse'
-      operationId: get-goodss-goodsId
+      operationId: get-goods-goodsId
       description: 取得單一商品
-  '/goodss/{goodsId}/inventory':
+  '/goods/{goodsId}/inventory':
     parameters:
       - $ref: '#/components/parameters/goodsId'
     patch:
       summary: Update goods inventory
-      operationId: patch-goodss-goodsId-inventory
+      operationId: patch-goods-goodsId-inventory
       responses:
         '200':
           description: OK
@@ -61,7 +61,7 @@ paths:
             schema:
               $ref: '#/components/schemas/GoodsInventoryUpdateDto'
       tags:
-        - Goodss
+        - Goods
 components:
   schemas:
     ErrorMessage:
@@ -193,4 +193,4 @@ components:
 security:
   - JWT: []
 tags:
-  - name: Goodss
+  - name: Goods
