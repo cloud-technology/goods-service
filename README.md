@@ -1,5 +1,7 @@
-## goods-service
+## OpenAPI generate
 This project shows how to automatically generate interface and Data Transfer Object from OpenAPI yaml file as a goods service.
+
+<!--more-->
 
 ### OpenAPI yaml file
 I put the OpenAPI specification file in specs/openapi.yaml  
@@ -50,7 +52,7 @@ ext {
 	set('openapiApiPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest")
 	// Models
 	set('openapiModelPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest.dto")
-    // JavaConfig
+	// JavaConfig
 	set('openapiConfigPackage', "${openapiInvokerPackage}.configuration")
 }
 ```
@@ -240,6 +242,9 @@ public class {{classname}} {{#parent}}extends ....{
 }
 ```
 
+source    
+[pojo.mustache](https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator/src/main/resources/JavaSpring/pojo.mustache)  
+
 In the OpenAPI specifications can be directly used in the definition of java annotations.
 ``` yaml
 GoodsViewDto:
@@ -273,6 +278,14 @@ public class GoodsViewDto extends RepresentationModel<GoodsViewDto>   {
   private String goodsId;
 }
 ```
+  
+and  
+source  
+[api.mustache](https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator/src/main/resources/JavaSpring/https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator/src/main/resources/JavaSpring/api.mustache)  
+add tags={ "{{{baseName}}}" }
+``` mustache
+@Api(value = "{{{baseName}}}", description = "the {{{baseName}}} API", tags={ "{{{baseName}}}" })
+```
 
 ## openapi generator ignore
 If it is generated to the root directory of the project, there will be more files that I don't need. At this time, I can exclude them through .openapi-generator-ignore, I will exclude the pom.xml & README.md that I don't need. Examples are as follows  
@@ -285,3 +298,34 @@ README.md
 ```
 
 Because usually projects have their own custom configuration, so I set interfaceOnly to true, so that only controller interface and dto will be generated. If you are used to generating a complete project through the generator, you can try setting it to false.
+
+## Entity generate by JOOQ
+
+``` bash
+docker-compose -f docker/docker-compose.yml up -d
+./gradlew bootRun
+java -cp jooq/jooq-lib/*:jooq/3rd-lib/*:jooq/db-lib/* org.jooq.codegen.GenerationTool jooq/jooq-config.xml
+```
+
+``` bash
+export BasePackage=src/main/java/com/example/demo
+export BoundedContext=goods
+
+mkdir -p ${BasePackage}/${BoundedContext}/application/services
+mkdir -p ${BasePackage}/${BoundedContext}/domain/model/entites
+mkdir -p ${BasePackage}/${BoundedContext}/infrastructure/repositories
+mkdir -p ${BasePackage}/${BoundedContext}/interfaces/rest/dto
+
+cp generated/jooq/com/example/demo/goods/entites/tables/pojos/* src/main/java/com/example/demo/goods/entites
+```
+
+
+rm -rf generated/ && ./gradlew clean openApiGenerate
+
+./gradlew bootRun
+
+
+
+https://codecentric.github.io/chaos-monkey-spring-boot/
+https://codecentric.github.io/chaos-monkey-spring-boot/latest/
+https://www.infoq.cn/article/fw0qex64efz5znwxz6mi

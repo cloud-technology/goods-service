@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: goods
+  profiles:
+    active:
+    - dev
+    # - chaos-monkey

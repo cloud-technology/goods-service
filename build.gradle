@@ -3,9 +3,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'org.openapi.generator' version '5.1.1'
+	id 'maven-publish'
 }
 
-group = 'com.example'
+group = 'com.example.demo'
 version = '0.0.1'
 sourceCompatibility = '11'
 
@@ -21,10 +22,11 @@ repositories {
 
 ext {
 	set('testcontainersVersion', "1.15.3")
-		// OpenAPI input file
+	// OpenAPI input file
 	set('openapiInputSpec', "${rootDir}/specs/openapi.yaml")
 	// Output dir
-	set('openapiOutputDir', "${rootDir}/generated/springboot")
+	// set('openapiOutputDir', "${rootDir}/generated/springboot")
+	set('openapiOutputDir', "${rootDir}")
 	// If customization need add template dir
 	set('openapiTemplateDir', "${rootDir}/template")
 	// root package (have OpenAPI2SpringBoot.java & RFC3339DateFormat.java) 
@@ -35,6 +37,11 @@ ext {
 	set('openapiModelPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest.dto")
     // JavaConfig
 	set('openapiConfigPackage', "${openapiInvokerPackage}.configuration")
+
+	set('mapstructVersion', "1.4.2.Final")
+	set('chaosMonkeyVersion', "2.4.5")
+	set('springfoxVersion', "3.0.0")
+	set('lombokMapstructBindingVersion', "0.2.0")
 }
 
 dependencies {
@@ -43,13 +50,29 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.flywaydb:flyway-core'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
+	// add
+	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:mysql'
+	// Swagger
+	implementation "io.springfox:springfox-boot-starter:${springfoxVersion}"
+	implementation "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+	implementation "io.springfox:springfox-data-rest:${springfoxVersion}"
+	// UnitTest
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	// mapstruct
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	// chaos-monkey
+	implementation "de.codecentric:chaos-monkey-spring-boot:${chaosMonkeyVersion}"
+
 }
 
 dependencyManagement {
@@ -128,4 +151,8 @@ task buildAngularSdk(type: org.openapitools.generator.gradle.plugin.tasks.Genera
 	generatorName = "typescript-angular"
 	inputSpec = "${openapiInputSpec}"
 	outputDir = "${rootDir}/generated/client/angular".toString()
+}
+
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 }
