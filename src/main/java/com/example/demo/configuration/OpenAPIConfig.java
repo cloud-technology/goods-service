@@ -5,9 +5,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import com.example.demo.goods.interfaces.rest.dto.ErrorMessageDetail;
+import com.fasterxml.classmate.TypeResolver;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +42,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Profile({"dev", "unittest"})
 public class OpenAPIConfig {
 
-  private static final String TITLE = "Init project Demo";
-  private static final String DESCRIPTION = "Quickly complete the initial project setup";
+  private static final String TITLE = "商品服務";
+  private static final String DESCRIPTION = "提供商品價格查詢以及庫存操作";
   private static final String VERSION = "1.0.1";
   private static final String TERMS_OF_SERVICE_URL = "";
   private static final String LICENSE = "Apache 2.0";
@@ -57,12 +62,12 @@ public class OpenAPIConfig {
         .genericModelSubstitutes(ResponseEntity.class, CompletableFuture.class)
         // .securityContexts(this.securityContext())
         // .securitySchemes(this.securitySchemes())
-        // .useDefaultResponseMessages(false)
-        // .additionalModels(new TypeResolver().resolve(ErrorMsg.class))
-        // .globalResponses(HttpMethod.GET, this.getGlobalResonseMessage())
-        // .globalResponses(HttpMethod.POST, this.getGlobalResonseMessage())
-        // .globalResponses(HttpMethod.PUT, this.getGlobalResonseMessage())
-        // .globalResponses(HttpMethod.DELETE, this.getGlobalResonseMessage())
+        .useDefaultResponseMessages(false)
+        .additionalModels(new TypeResolver().resolve(ErrorMessageDetail.class))
+        .globalResponses(HttpMethod.GET, this.getGlobalResonseMessage())
+        .globalResponses(HttpMethod.POST, this.getGlobalResonseMessage())
+        .globalResponses(HttpMethod.PUT, this.getGlobalResonseMessage())
+        .globalResponses(HttpMethod.DELETE, this.getGlobalResonseMessage())
         .apiInfo(this.apiInfo())
         .select()
         // .apis(RequestHandlerSelectors.basePackage("com.example.demo.goods.interfaces.rest.impl"))
@@ -104,18 +109,18 @@ public class OpenAPIConfig {
    */
   private List<Response> getGlobalResonseMessage() {
     List<Response> responseList = new ArrayList<>();
-    // responseList.add(this.createResponse(HttpStatus.BAD_REQUEST,
-    // HttpStatus.BAD_REQUEST.getReasonPhrase()));
-    // responseList.add(this.createResponse(HttpStatus.UNAUTHORIZED,
-    // HttpStatus.UNAUTHORIZED.getReasonPhrase()));
-    // responseList.add(this.createResponse(HttpStatus.FORBIDDEN,
-    // HttpStatus.FORBIDDEN.getReasonPhrase()));
-    // responseList.add(this.createResponse(HttpStatus.NOT_FOUND,
-    // HttpStatus.NOT_FOUND.getReasonPhrase()));
-    // responseList.add(this.createResponse(HttpStatus.CONFLICT,
-    // HttpStatus.CONFLICT.getReasonPhrase()));
-    // responseList.add(this.createResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-    // HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    responseList.add(this.createResponse(HttpStatus.BAD_REQUEST,
+    HttpStatus.BAD_REQUEST.getReasonPhrase()));
+    responseList.add(this.createResponse(HttpStatus.UNAUTHORIZED,
+    HttpStatus.UNAUTHORIZED.getReasonPhrase()));
+    responseList.add(this.createResponse(HttpStatus.FORBIDDEN,
+    HttpStatus.FORBIDDEN.getReasonPhrase()));
+    responseList.add(this.createResponse(HttpStatus.NOT_FOUND,
+    HttpStatus.NOT_FOUND.getReasonPhrase()));
+    responseList.add(this.createResponse(HttpStatus.CONFLICT,
+    HttpStatus.CONFLICT.getReasonPhrase()));
+    responseList.add(this.createResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+    HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     return responseList;
   }
 
@@ -137,7 +142,7 @@ public class OpenAPIConfig {
                 pepresentationBuilder.model(
                     modelSpecificationBuilder ->
                         modelSpecificationBuilder
-                            .name("ErrorResponse")
+                            .name("ErrorMessage")
                             .referenceModel(
                                 referenceModelSpecificationBuilder ->
                                     referenceModelSpecificationBuilder
@@ -148,9 +153,9 @@ public class OpenAPIConfig {
                                                     .qualifiedModelName(
                                                         qualifiedModelNameBuilder ->
                                                             qualifiedModelNameBuilder
-                                                                .name("ErrorMsg")
+                                                                .name("ErrorMessageDetail")
                                                                 .namespace(
-                                                                    "com.example.demo.shareddomain.dto")
+                                                                    "com.example.demo.goods.interfaces.rest.dto")
                                                                 .build())
                                                     .build())
                                         .build())

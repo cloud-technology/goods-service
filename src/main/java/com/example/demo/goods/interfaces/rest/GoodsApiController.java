@@ -1,5 +1,7 @@
 package com.example.demo.goods.interfaces.rest;
 
+import java.util.List;
+
 import com.example.demo.goods.application.services.GoodsService;
 import com.example.demo.goods.interfaces.rest.dto.GoodsInventoryUpdateDto;
 import com.example.demo.goods.interfaces.rest.dto.GoodsViewDto;
@@ -18,6 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class GoodsApiController implements GoodsApi {
 
     private final GoodsService goodsService;
+
+    public ResponseEntity<List<GoodsViewDto>> getGoods() throws Exception {
+        return new ResponseEntity<List<GoodsViewDto>>(goodsService.findAll(),
+                HttpStatus.OK);
+    }
 
     public ResponseEntity<GoodsViewDto> getGoodsGoodsId(String goodsId) throws Exception {
         return new ResponseEntity<GoodsViewDto>(goodsService.findById(goodsId), HttpStatus.OK);

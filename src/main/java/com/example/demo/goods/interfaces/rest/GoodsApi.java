@@ -23,7 +23,7 @@ import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-05-30T16:54:09.001634+08:00[Asia/Taipei]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-06-03T12:03:01.654122+08:00[Asia/Taipei]")
 @Validated
 @Api(value = "Goods", description = "the Goods API", tags={ "Goods" })
 public interface GoodsApi {
@@ -31,6 +31,37 @@ public interface GoodsApi {
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
+
+    /**
+     * GET /goods : Your GET endpoint
+     * 取得商品清單
+     *
+     * @return OK (status code 200)
+     */
+    @ApiOperation(value = "Your GET endpoint", nickname = "getGoods", notes = "取得商品清單", response = GoodsViewDto.class, responseContainer = "List", authorizations = {
+        
+        @Authorization(value = "JWT")
+         }, tags={ "Goods", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "OK", response = GoodsViewDto.class, responseContainer = "List") })
+    @GetMapping(
+        value = "/goods",
+        produces = "application/json"
+    )
+    default ResponseEntity<List<GoodsViewDto>> getGoods() throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"unitPrice\" : 0, \"goodsId\" : \"goodsId\", \"inventory\" : 6, \"goodsName\" : \"goodsName\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * GET /goods/{goodsId} : get goods by ID

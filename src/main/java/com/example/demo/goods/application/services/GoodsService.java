@@ -1,6 +1,8 @@
 package com.example.demo.goods.application.services;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.example.demo.goods.domain.model.entites.Goods;
 import com.example.demo.goods.infrastructure.repositories.GoodsRepository;
@@ -20,6 +22,13 @@ public class GoodsService {
 
     private final GoodsRepository goodsRepository;
     // private final GoodsMapper goodsMapper;
+
+    public List<GoodsViewDto> findAll() {
+        List<Goods> goodsList = goodsRepository.findAll();
+        GoodsMapper goodsMapper = Mappers.getMapper(GoodsMapper.class);
+        List<GoodsViewDto> GoodsViewDtoList = goodsList.stream().map(goods -> goodsMapper.entityToDTO(goods)).collect(Collectors.toList());
+        return GoodsViewDtoList;
+    }
 
     public GoodsViewDto findById(String goodsId) {
         Optional<Goods> optionalGoods = goodsRepository.findById(goodsId);

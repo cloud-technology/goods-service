@@ -62,6 +62,22 @@ paths:
               $ref: '#/components/schemas/GoodsInventoryUpdateDto'
       tags:
         - Goods
+  /goods:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Goods
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GoodsViewDto'
+      operationId: get-goods
+      description: 取得商品清單
 components:
   schemas:
     ErrorMessage:
@@ -127,14 +143,10 @@ components:
       title: goodsViewDto
       type: object
       description: Goods object view Data Transfer Object
-      x-java-class-annotations:
-        - '@lombok.Builder'
       properties:
         goodsId:
           type: string
           description: goods ID
-          x-java-field-annotations:
-            - '@javax.validation.constraints.NotBlank'
         goodsName:
           type: string
           description: goods name
